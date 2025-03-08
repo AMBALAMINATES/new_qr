@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMBA QR</title>
+    <link rel="stylesheet" href="s.css"> 
+</head>
+<body>
+
+    <h2>AMBA QR CODES</h2>
+    <label for="partyName">Party Name:</label>
+    <input type="text" id="partyName"><br>
+
+    <label for="sku">SKU:</label>
+    <input type="text" id="sku"><br>
+
+    <label for="thickness">Thickness:</label>
+    <input type="text" id="thickness"><br>
+
+    <label for="requiredQuantity">Required Quantity:</label>
+    <input type="number" id="requiredQuantity"><br>
+
+    <label for="quantity">Quantity (No. of QR Codes):</label>
+    <input type="number" id="quantity"><br>
+
+    <button onclick="generateQRCode()">Generate QR Codes</button>
+
+    <div id="qrContainer"></div>
+
+    <h2>Scanned QR Codes</h2>
+    
+   
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate">
+
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate">
+
+    <button id="filterButton">Apply Filter</button>
+
+    <table id="qrDataTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>SKU</th>
+                <th>Party Name</th>
+                <th>Required Qty</th>
+                <th>Scanned Qty</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button onclick="printQRCode()">Print QR Codes</button>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+   
+
+
+
+    <script type="module" src="new.js"></script>
+
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="new.js"></script> 
+    
+
+    
+      
+
+</body>
+</html>

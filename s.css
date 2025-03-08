@@ -1,0 +1,45 @@
+/* Basic styles for the QR code container and table */
+#qrContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.qr-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.top-text, .bottom-text {
+    margin: 5px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
