@@ -1,10 +1,10 @@
-// ✅ Import Firebase Modules
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { 
     getFirestore, collection, doc, setDoc, getDoc, getDocs 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// ✅ Firebase Configuration
+
 const firebaseConfig = {
     apiKey: "AIzaSyARwWaQhJFOn7Ydh37AegJPyqMP-iVaj2s",
     authDomain: "qrscanner-b2520.firebaseapp.com",
@@ -14,12 +14,12 @@ const firebaseConfig = {
     appId: "1:450779840958:web:25dc854dc5ffec5781f9ef",
 };
 
-// ✅ Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let scannedIds = new Set();
 
-// ✅ Generate QR Codes
+
 function generateQRCode() {
     const partyName = document.getElementById('partyName').value.trim();
     const sku = document.getElementById('sku').value.trim();
@@ -65,7 +65,7 @@ function generateQRCode() {
     }
 }
 
-// ✅ Scan QR Code and Save to Firebase (Ensure Separate Entries for SKU & Party Name)
+
 async function scanQRCode(qrData) {
     if (scannedIds.has(qrData.uniqueId)) {
         alert("This QR code has already been scanned.");
@@ -75,21 +75,21 @@ async function scanQRCode(qrData) {
     scannedIds.add(qrData.uniqueId);
 
     try {
-        const docId = `${qrData.sku}-${qrData.partyName}`; // ✅ Unique ID: SKU + Party Name
+        const docId = `${qrData.sku}-${qrData.partyName}`; 
         const docRef = doc(db, "scannedQRData", docId);
         const docSnap = await getDoc(docRef);
 
         let scannedQuantity = 1;
         let requiredQuantity = qrData.requiredQuantity;
 
-        // ✅ Check if the SKU & Party combination exists in Firestore
+        
         if (docSnap.exists()) {
             const existingData = docSnap.data();
-            scannedQuantity = existingData.scannedQuantity + 1; // ✅ Increment only for the same party
+            scannedQuantity = existingData.scannedQuantity + 1; 
             requiredQuantity = existingData.requiredQuantity;
         }
 
-        // ✅ Save/Update Firestore Entry
+       
         await setDoc(docRef, {
             partyName: qrData.partyName,
             sku: qrData.sku,
@@ -107,7 +107,7 @@ async function scanQRCode(qrData) {
     }
 }
 
-// ✅ Fetch Data from Firebase
+
 async function fetchQRData() {
     try {
         const querySnapshot = await getDocs(collection(db, "scannedQRData"));
@@ -120,7 +120,7 @@ async function fetchQRData() {
 }
 fetchQRData();
 
-// ✅ Load Data into Table
+
 async function updateScannedTable() {
     const tableBody = document.querySelector("#qrDataTable tbody");
     tableBody.innerHTML = "";
@@ -140,7 +140,7 @@ async function updateScannedTable() {
     });
 }
 
-// ✅ Date Filter Functionality
+
 document.getElementById("filterButton").addEventListener("click", async () => {
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
@@ -164,7 +164,7 @@ document.getElementById("filterButton").addEventListener("click", async () => {
     });
 });
 
-// ✅ Print QR Codes
+
 function printQRCode() {
     const qrContainer = document.getElementById('qrContainer');
     if (!qrContainer) {
