@@ -4,43 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMBA LAMINATES</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> <!-- ✅ Add this -->
+     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> 
 </head>
 <body>
     <div class="container">
         <h2>AMBA LAMINATES</h2>
 
         <!-- SKU Input -->
-        <label for="sku">SKU:</label>
-        <input type="text" id="sku" placeholder="Enter SKU" autocomplete="off">
-        <div id="skuSuggestions" class="suggestions-box"></div>
+        <label for="sku">SKU:</label><br>
+        <input type="text" id="sku" placeholder="Enter SKU" autocomplete="off"><br>
+        <div id="skuSuggestions" class="suggestions-box"></div><br>
 
         <!-- Other Fields to be Auto-filled -->
-        <label for="thickness">Thickness:</label>
-        <input type="text" id="thickness" readonly>
+        <label for="thickness">Thickness:</label><br><br>
+        <input type="text" id="thickness" readonly><br><br>
 
-        <label for="size">Size:</label>
-        <input type="text" id="size" readonly>
+        <label for="size">Size:</label><br><br>
+        <input type="text" id="size" readonly><br><br>
 
-        <label for="paperCode">Paper Code:</label>
-        <input type="text" id="paperCode" readonly>
+        <label for="paperCode">Paper Code:</label><br><br>
+        <input type="text" id="paperCode" readonly><br><br>
 
-        <label for="finish">Finish:</label>
-        <input type="text" id="finish" readonly>
+        <label for="finish">Finish:</label><br><br>
+        <input type="text" id="finish" readonly><br><br>
 
         <!-- QR Code Generation Section -->
-        <label for="requiredQuantity">Required Quantity:</label>
-        <input type="number" id="requiredQuantity" placeholder="Enter Required Quantity">
+        <label for="requiredQuantity">Required Quantity:</label><br><br>
+        <input type="number" id="requiredQuantity" placeholder="Enter Required Quantity"><br><br>
 
-        <label for="quantity">Number of QR Codes:</label>
-        <input type="number" id="quantity" placeholder="Enter QR Code Count">
+        <label for="quantity">Number of QR Codes:</label><br><br>
+        <input type="number" id="quantity" placeholder="Enter QR Code Count"><br><br>
 
-        <button id="generateQR">Generate QR Code</button>
-        <button id="printQR">Print QR Code</button>
-        <div id="qrContainer"></div>
+        <label for="PARTY NAME">PARTY NAME:</label><br><br>
+        <input type="text" id="PARTY NAME" ><br><br>
+
+        <button id="generateQR">Generate QR Code</button><br><br>
+        <button id="printQR">Print QR Code</button><br><br>
+        <div id="qrContainer"></div><br><br>
+
+        <!-- Date Range Filter Section -->
+        <label for="startDate">Start Date:</label><br>
+        <input type="date" id="startDate"><br><br>
+
+        <label for="endDate">End Date:</label><br>
+        <input type="date" id="endDate"><br><br>
+
+        <!-- Filter Button -->
+        <button id="filterData">Filter Data</button><br><br>
+        <!-- Container for displaying the filtered data table -->
+<div id="tableContainer"></div>
+<button id="printQR">Print QR Codes</button>
+
+
     </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <!-- ✅ Your script should come last -->
     <script type="module" src="new.js"></script>
+
+    <script>
+        // Handle filter button click event
+        document.getElementById('filterData').addEventListener('click', function() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // You can now use the selected dates for filtering the data as required
+            console.log('Filtering data from', startDate, 'to', endDate);
+
+            // Example: Just display an alert (you can replace this with your actual filtering logic)
+            if (startDate && endDate) {
+                alert(`Filtered data from ${startDate} to ${endDate}`);
+            } else {
+                alert('Please select both start and end dates');
+            }
+        });
+    </script>
 </body>
 </html>
