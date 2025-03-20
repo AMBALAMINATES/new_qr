@@ -11,12 +11,12 @@
     <div class="container">
         <h2>AMBA LAMINATES</h2>
 
-        <!-- SKU Input -->
+       
         <label for="sku">SKU:</label><br>
         <input type="text" id="sku" placeholder="Enter SKU" autocomplete="off"><br>
         <div id="skuSuggestions" class="suggestions-box"></div><br>
 
-        <!-- Other Fields to be Auto-filled -->
+        
         <label for="thickness">Thickness:</label><br><br>
         <input type="text" id="thickness" readonly><br><br>
 
@@ -61,19 +61,19 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <!-- ✅ Your script should come last -->
+    
     <script type="module" src="new.js"></script>
 
     <script>
-        // Handle filter button click event
+        
         document.getElementById('filterData').addEventListener('click', function() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
 
-            // You can now use the selected dates for filtering the data as required
+           
             console.log('Filtering data from', startDate, 'to', endDate);
 
-            // Example: Just display an alert (you can replace this with your actual filtering logic)
+            
             if (startDate && endDate) {
                 alert(`Filtered data from ${startDate} to ${endDate}`);
             } else {
