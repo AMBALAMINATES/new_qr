@@ -4,82 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMBA LAMINATES</title>
-     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> 
+    <link rel="stylesheet" href="s.css">
 </head>
+
 <body>
+    
+    <div class="sidebar">
+        <h3  style="text-align: center;">AMBA LAMINATES</h3>
+        <div class="sidebar-item" id="generateQROption">Generate QR</div>
+        <div class="sidebar-item" id="dataOption">HISTORY</div>
+    </div>
+
     <div class="container">
-        <h2>AMBA LAMINATES</h2>
+        <!-- Main Content for Generate QR or Data Section -->
+        <div id="noSidebar">
+            <h2>AMBA LAMINATES</h2>
+        </div>
+        <div id="sidebarOptions">
+            <!-- QR Code Generation Section -->
+            <div id="generateQRContent" style="display: none;">
+                <h2>Generate QR Code</h2>
+                <label for="sku">SKU:</label><br>
+                <input type="text" id="sku" placeholder="Enter SKU" autocomplete="off"><br>
+                <div id="skuSuggestions" class="suggestions-box"></div><br>
 
-       
-        <label for="sku">SKU:</label><br>
-        <input type="text" id="sku" placeholder="Enter SKU" autocomplete="off"><br>
-        <div id="skuSuggestions" class="suggestions-box"></div><br>
+                <label for="thickness">Thickness:</label><br>
+                <input type="text" id="thickness" readonly><br><br>
 
-        
-        <label for="thickness">Thickness:</label><br><br>
-        <input type="text" id="thickness" readonly><br><br>
+                <label for="size">Size:</label><br>
+                <input type="text" id="size" readonly><br><br>
 
-        <label for="size">Size:</label><br><br>
-        <input type="text" id="size" readonly><br><br>
+                <label for="paperCode">Paper Code:</label><br>
+                <input type="text" id="paperCode" readonly><br><br>
 
-        <label for="paperCode">Paper Code:</label><br><br>
-        <input type="text" id="paperCode" readonly><br><br>
+                <label for="finish">Finish:</label><br>
+                <input type="text" id="finish" readonly><br><br>
 
-        <label for="finish">Finish:</label><br><br>
-        <input type="text" id="finish" readonly><br><br>
+                <label for="requiredQuantity">Required Quantity:</label><br>
+                <input type="number" id="requiredQuantity" placeholder="Enter Required Quantity"><br><br>
 
-        <!-- QR Code Generation Section -->
-        <label for="requiredQuantity">Required Quantity:</label><br><br>
-        <input type="number" id="requiredQuantity" placeholder="Enter Required Quantity"><br><br>
+                <label for="quantity">Number of QR Codes:</label><br>
+                <input type="number" id="quantity" placeholder="Enter QR Code Count"><br><br>
 
-        <label for="quantity">Number of QR Codes:</label><br><br>
-        <input type="number" id="quantity" placeholder="Enter QR Code Count"><br><br>
+                <label for="partyName">PARTY NAME:</label><br>
+                <input type="text" id="partyName"><br><br>
 
-        <label for="PARTY NAME">PARTY NAME:</label><br><br>
-        <input type="text" id="PARTY NAME" ><br><br>
+                <button id="generateQR">Generate QR Code</button><br><br>
+                <button id="printQR">Print QR Code</button><br><br>
 
-        <button id="generateQR">Generate QR Code</button><br><br>
-        <button id="printQR">Print QR Code</button><br><br>
-        <div id="qrContainer"></div><br><br>
+                <div id="qrContainer"></div><br><br>
+            </div>
 
-        <!-- Date Range Filter Section -->
-        <label for="startDate">Start Date:</label><br>
-        <input type="date" id="startDate"><br><br>
+            <!-- Data Section with Date Filter -->
+            <div id="dataContent" style="display: none;">
+                <h2>Filter Data by Date</h2>
+                <label for="startDate">Start Date:</label><br>
+                <input type="date" id="startDate"><br><br>
 
-        <label for="endDate">End Date:</label><br>
-        <input type="date" id="endDate"><br><br>
+                <label for="endDate">End Date:</label><br>
+                <input type="date" id="endDate"><br><br>
 
-        <!-- Filter Button -->
-        <button id="filterData">Filter Data</button><br><br>
-        <!-- Container for displaying the filtered data table -->
-<div id="tableContainer"></div>
-<button id="printQR">Print QR Codes</button>
+                <button id="filterData">Filter Data</button><br><br>
 
-
+                <!-- Container for displaying the filtered data table -->
+                <div id="tableContainer"></div>
+            </div>
+        </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-    
     <script type="module" src="new.js"></script>
+   <script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const generateQRButton = document.getElementById("generateQR");
+    
+    if (generateQRButton) {  // ✅ Check if button exists
+        generateQRButton.addEventListener("click", async function () {
+            const skuInput = document.getElementById("sku");
+            const thicknessInput = document.getElementById("thickness");
+            const quantityInput = document.getElementById("quantity");
 
-    <script>
-        
-        document.getElementById('filterData').addEventListener('click', function() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-
-           
-            console.log('Filtering data from', startDate, 'to', endDate);
-
-            
-            if (startDate && endDate) {
-                alert(`Filtered data from ${startDate} to ${endDate}`);
-            } else {
-                alert('Please select both start and end dates');
+            if (!skuInput || !thicknessInput || !quantityInput) {  
+                console.error("❌ One or more input fields are missing!");  
+                return;  
             }
+
+            const sku = skuInput.value.trim();
+            const thickness = thicknessInput.value.trim();
+            const quantity = parseInt(quantityInput.value.trim(), 10);
+
+            if (!sku || !thickness || isNaN(quantity) || quantity <= 0) {
+                alert("Please fill all fields correctly before generating QR Codes.");
+                return;
+            }
+
+            console.log("✅ QR Code generation started for:", sku, thickness, quantity);
         });
-    </script>
+    } else {
+        console.error("❌ Generate QR button not found!");
+    }
+});
+
+
+
+   </script>
+    
 </body>
 </html>
