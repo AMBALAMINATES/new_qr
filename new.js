@@ -1,6 +1,6 @@
 // ✅ Firebase SDK Initialization
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { Timestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // ✅ Firebase Configuration
@@ -132,7 +132,7 @@ document.getElementById("generateQR").addEventListener("click", async function (
         const qrElement = document.createElement("div");
         new QRCode(qrElement, {
             text: uniqueID,  // Now includes the partyName
-            width: 100,
+            width: 250,
             height: 100,
         });
 
@@ -145,7 +145,12 @@ document.getElementById("generateQR").addEventListener("click", async function (
 
         document.getElementById("qrContainer").appendChild(qrContainer);
 
-        // Prepare the QR code data for storing in Firestore
+        // Add click event to the QR container to save data when clicked
+        qrContainer.addEventListener('click', async function () {
+            await saveQRCodeToFirebase(sku, thickness, requiredQuantity, partyName, uniqueID);
+        });
+
+        // Store QR codes in the array (for reference if needed)
         qrCodes.push({
             sku: sku,
             thickness: thickness,
@@ -157,6 +162,12 @@ document.getElementById("generateQR").addEventListener("click", async function (
         });
     }
 
+    // QR Codes are now generated, but not saved yet. Saving happens on click.
+
+});
+
+// ✅ Function to save QR code data to Firebase when it's clicked
+async function saveQRCodeToFirebase(sku, thickness, requiredQuantity, partyName, uniqueID) {
     try {
         const scannedQRDataRef = collection(db, 'scannedQRData'); // Use 'scannedQRData' collection
 
@@ -175,7 +186,7 @@ document.getElementById("generateQR").addEventListener("click", async function (
             const existingData = doc.data();
 
             if (existingData.scannedQty < existingData.requiredQuantity) {
-                const updatedQty = existingData.scannedQty + quantity; // Increment scanned quantity
+                const updatedQty = existingData.scannedQty + 1; // Increment scanned quantity by 1 for each click
 
                 // Check if the required quantity is reached
                 if (updatedQty >= existingData.requiredQuantity) {
@@ -199,7 +210,7 @@ document.getElementById("generateQR").addEventListener("click", async function (
                 sku: sku,
                 thickness: thickness,
                 requiredQuantity: requiredQuantity,
-                scannedQty: quantity,
+                scannedQty: 1,  // Start with 1 as the QR is clicked once
                 partyName: partyName,
                 timestamp: new Date(), // Store the current timestamp for filtering
             };
@@ -212,7 +223,7 @@ document.getElementById("generateQR").addEventListener("click", async function (
     } catch (error) {
         console.error("❌ Error saving scanned data:", error);
     }
-});
+}
 
 // ✅ Filter Scanned Data by Date Range from 'scannedQRData'
 document.getElementById("filterData").addEventListener("click", async function() {
@@ -228,100 +239,83 @@ document.getElementById("filterData").addEventListener("click", async function()
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Remove the time part for startDate and endDate
-    start.setHours(0, 0, 0, 0);  // Set startDate to 00:00:00
-    end.setHours(23, 59, 59, 999);  // Set endDate to 23:59:59 for the whole day
+    // Remove the time portion
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
 
     try {
-        // Convert JavaScript Date to Firestore Timestamp for querying
-        const startTimestamp = Timestamp.fromDate(start);
-        const endTimestamp = Timestamp.fromDate(end);
-
-        // Query the 'scannedQRData' collection for data within the selected date range
         const scannedQRDataRef = collection(db, 'scannedQRData');
-        const q = query(
+        const filteredQuery = query(
             scannedQRDataRef,
-            where('timestamp', '>=', startTimestamp),
-            where('timestamp', '<=', endTimestamp)
+            where('timestamp', '>=', Timestamp.fromDate(start)),
+            where('timestamp', '<=', Timestamp.fromDate(end))
         );
 
-        // Fetch the filtered data
-        const querySnapshot = await getDocs(q);
-        const scannedData = [];
+        const querySnapshot = await getDocs(filteredQuery);
 
-        querySnapshot.forEach((doc) => {
-            scannedData.push(doc.data());
-        });
+        // Get the filteredResults container where we want to show the table
+        const filteredResultsContainer = document.getElementById("filteredResults");
 
-        // Display the filtered data in a table
-        displayScannedData(scannedData);
+        if (filteredResultsContainer) {
+            // Only clear the filtered results container (not the filter button)
+            filteredResultsContainer.innerHTML = ''; 
+
+            // Create a table element
+            const table = document.createElement('table');
+            table.border = "1";
+            table.style.width = '100%'; // Optional, adjust width as needed
+
+            // Create header row
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `
+                <th>Date</th>
+                <th>Party Name</th>
+                <th>SKU</th>
+                <th>Required Quantity</th>
+                <th>Scanned Quantity</th>
+                <th>Thickness</th>
+            `;
+            table.appendChild(headerRow);
+
+            // Add data rows for each document in the query snapshot
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.timestamp.toDate().toLocaleDateString()}</td>
+                    <td>${data.partyName}</td>
+                    <td>${data.sku}</td>
+                    <td>${data.requiredQuantity}</td>
+                    <td>${data.scannedQty}</td>
+                    <td>${data.thickness}</td>
+                `;
+                table.appendChild(row);
+            });
+
+            // Append the table to the filteredResults container
+            filteredResultsContainer.appendChild(table);
+        } else {
+            console.error("❌ Element 'filteredResults' not found in the DOM.");
+        }
     } catch (error) {
-        console.error("❌ Error fetching filtered data:", error);
+        console.error("❌ Error filtering data:", error);
     }
 });
 
-// ✅ Display Scanned Data in Table
-function displayScannedData(data) {
-    const tableContainer = document.getElementById('tableContainer');
-
-    // Ensure the tableContainer exists before proceeding
-    if (!tableContainer) {
-        console.error('❌ Table container not found.');
-        return;  // Stop execution if the container doesn't exist
-    }
-
-    tableContainer.innerHTML = '';  // Clear any previous data
-
-    if (data.length === 0) {
-        tableContainer.innerHTML = 'No data found for the selected date range.';
-        return;
-    }
-
-    // Create a table
-    const table = document.createElement('table');
-    table.border = "1";
-
-    // Create header row
-    const headerRow = document.createElement('tr');
-    headerRow.innerHTML = `
-        <th>Date</th>
-        <th>Party Name</th>
-        <th>SKU</th>
-        <th>Required Quantity</th>
-        <th>Scanned Quantity</th>
-        <th>Thickness</th>
-    `;
-    table.appendChild(headerRow);
-
-    // Add rows for each data item
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${item.timestamp.toDate().toLocaleDateString()}</td>
-            <td>${item.partyName}</td>
-            <td>${item.sku}</td>
-            <td>${item.requiredQuantity}</td>
-            <td>${item.scannedQty}</td>
-            <td>${item.thickness}</td>
-        `;
-        table.appendChild(row);
-    });
-
-    tableContainer.appendChild(table);
-}
 document.getElementById("printQR").addEventListener("click", function () {
     const printWindow = window.open("", "_blank");
     printWindow.document.write("<html><head><title>Print QR Codes</title></head><body>");
 
     const qrCodes = document.getElementById("qrContainer").innerHTML;
     printWindow.document.write(qrCodes);
+
     printWindow.document.write("</body></html>");
     printWindow.document.close();
-    printWindow.print();
+
+    setTimeout(function() {
+        printWindow.print();
+    }, 1000);
 });
-
-
-
 const sidebarItems = document.querySelectorAll('.sidebar-item');
 const generateQRContent = document.getElementById('generateQRContent');
 const dataContent = document.getElementById('dataContent');
@@ -350,4 +344,3 @@ sidebarItems.forEach(item => {
         }
     });
 });
-
